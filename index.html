@@ -1,44 +1,120 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ko" lang="ko">
+
 <head>
-<title>Cross-Browser QRCode generator for Javascript</title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
-<script type="text/javascript" src="jquery.min.js"></script>
-<script type="text/javascript" src="qrcode.js"></script>
+  <title>Cross-Browser QRCode generator for Javascript</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
+  <link rel="stylesheet" href="normalize.css" />
+  <link rel="stylesheet" href="milligram.css" />
+  <script type="text/javascript" src="qrcode.js"></script>
+  <style>
+    #qrcode-container {
+      text-align: center;
+    }
+
+    .qrcode-box {
+      padding-bottom: 4rem;
+    }
+
+    .half-box{
+      width: 50%;
+    }
+  </style>
 </head>
+
 <body>
-<input id="text" type="text" value="http://jindo.dev.naver.com/collie" style="width:80%" /><br />
-<div id="qrcode" style="width:100px; height:100px; margin-top:15px;"></div>
+  <div class="container">
+    <div class="row">
+      <div class="column">
+        <h1>Gerador de QR Code</h1>
+      </div>
+    </div>
 
-<script type="text/javascript">
-var qrcode = new QRCode(document.getElementById("qrcode"), {
-	width : 100,
-	height : 100
-});
+    <div class="row">
+      <div class="column">
+        <form onsubmit="return false;">
+          <fieldset>
+            <div class="row">
+              <div class="column column-75">
+                <label for="texto">Conteúdo:</label>
+                <textarea id="texto" required></textarea>
+              </div>
+              <div class="column column-25 clearfix">
+                <label for="cl">Nível de Correção</label>
+                <div class="half-box float-left">
+                  <label for="LCL"><input type="radio" id="LCL" name="cl" value="L"> L</label>
+                  <label for="MCL"><input type="radio" id="MCL" name="cl" value="M" checked> M</label>
+                </div>
+                <div class="half-box float-left">
+                  <label for="QCL"><input type="radio" id="QCL" name="cl" value="Q"> Q</label>
+                  <label for="HCL"><input type="radio" id="HCL" name="cl" value="H"> H</label>
+                </div>
+              </div>
+            </div>
+            <input class="button button-primary" type="button" value="Gerar" onclick="gerarQR()">
+            <input class="button button-outline" type="button" value="Limpar" onclick="limparQR()">
+          </fieldset>
+        </form>
+      </div>
+    </div>
 
-function makeCode () {		
-	var elText = document.getElementById("text");
-	
-	if (!elText.value) {
-		alert("Input a text");
-		elText.focus();
-		return;
-	}
-	
-	qrcode.makeCode(elText.value);
-}
+    <div id="qrcode-container" class="row">
+      <div class="column">
+        <div>
+          <h3>CL: L</h3>
+        </div>
+        <div class="qrcode-box">
+          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <g id="QRCode" />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript">
+    var QRCodeL = new QRCode(document.getElementById("QRCode"), {
+      useSVG: true,
+      correctLevel: QRCode.CorrectLevel.L
+    });
 
-makeCode();
+    var QRCodeM = new QRCode(document.getElementById("QRCode"), {
+      useSVG: true,
+      correctLevel: QRCode.CorrectLevel.M
+    });
 
-$("#text").
-	on("blur", function () {
-		makeCode();
-	}).
-	on("keydown", function (e) {
-		if (e.keyCode == 13) {
-			makeCode();
-		}
-	});
-</script>
+    var QRCodeQ = new QRCode(document.getElementById("QRCode"), {
+      useSVG: true,
+      correctLevel: QRCode.CorrectLevel.Q
+    });
+
+    var QRCodeH = new QRCode(document.getElementById("QRCode"), {
+      useSVG: true,
+      correctLevel: QRCode.CorrectLevel.H
+    });
+
+    function gerarQR() {
+      var texto = document.getElementById("texto");
+
+      if (!texto.value) {
+        alert("Campo Conteúdo Obrigatório");
+        texto.focus();
+        return;
+      }
+
+      switch(document.querySelector('input[name="cl"]:checked').value){
+        case 'L': QRCodeL.makeCode(texto.value); break;
+        case 'Q': QRCodeQ.makeCode(texto.value); break;
+        case 'H': QRCodeH.makeCode(texto.value); break;
+        default: QRCodeM.makeCode(texto.value);
+      }
+    }
+
+    function limparQR() {
+      QRCodeL.clear();
+    }
+  </script>
 </body>
+
+</html>
